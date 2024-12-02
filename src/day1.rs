@@ -9,7 +9,7 @@ use winnow::{
     PResult, Parser,
 };
 
-fn main() -> std::io::Result<()> {
+pub fn solve_both() -> std::io::Result<()> {
     let current_dir = env::current_dir()?;
     let file_path = current_dir.join("input/day1/input1.txt");
     let mut f = File::open(file_path)?;
@@ -61,13 +61,6 @@ fn process_part_two(input: &str) -> std::io::Result<i64> {
 
     let (first_list, second_list): (Vec<i32>, Vec<i32>) = lines.into_iter().unzip();
 
-    // TODO: take second list, do a count of each item, turn into hashmap
-    //      loop through second list, and do the math
-    // let first_list_counts = first_list
-    //     .into_iter()
-    //     .into_grouping_map_by(|key| *key)
-    //     .fold(0, |acc, _key, _| acc + 1);
-
     let second_list_counts = second_list
         .into_iter()
         .into_grouping_map_by(|key| *key)
@@ -77,7 +70,7 @@ fn process_part_two(input: &str) -> std::io::Result<i64> {
 
     for k in first_list {
         if let Some(second_list_count) = second_list_counts.get(&k) {
-            println!("k {}, count {}", k, second_list_count);
+            //println!("k {}, count {}", k, second_list_count);
             let first_list_num = k as i64;
             //let times_first_list = v as i64;
             let times_second_list = *second_list_count as i64;
