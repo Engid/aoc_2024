@@ -1,3 +1,4 @@
+use itertools::*;
 use std::env;
 use std::fs::File;
 use std::io::Read;
@@ -15,17 +16,21 @@ fn main() -> std::io::Result<()> {
     let mut contents = String::new();
     f.read_to_string(&mut contents)?;
 
-    //println!("{}", contents);
+    let input = contents.as_str();
 
-    let answer = process_input(contents).unwrap();
+    let answer1 = process_part_one(input).unwrap();
 
-    println!("{}", answer);
+    println!("answer 1 {}", answer1);
+
+    let answer2 = process_part_two(input).unwrap();
+
+    println!("answer 2 {}", answer2);
 
     Ok(())
 }
 
-fn process_input(input: String) -> std::io::Result<i32> {
-    let lines_result = parse_lines.parse(&input);
+fn process_part_one(input: &str) -> std::io::Result<i32> {
+    let lines_result = parse_lines.parse(input);
 
     let lines = match lines_result {
         Ok(ls) => ls,
@@ -44,6 +49,51 @@ fn process_input(input: String) -> std::io::Result<i32> {
         .sum();
 
     Ok(sum)
+}
+
+fn process_part_two(input: &str) -> std::io::Result<i64> {
+    let lines_result = parse_lines.parse(&input);
+
+    let lines = match lines_result {
+        Ok(ls) => ls,
+        Err(message) => panic!("{}", message),
+    };
+
+    let (first_list, second_list): (Vec<i32>, Vec<i32>) = lines.into_iter().unzip();
+
+    // TODO: take second list, do a count of each item, turn into hashmap
+    //      loop through second list, and do the math
+    // let first_list_counts = first_list
+    //     .into_iter()
+    //     .into_grouping_map_by(|key| *key)
+    //     .fold(0, |acc, _key, _| acc + 1);
+
+    let second_list_counts = second_list
+        .into_iter()
+        .into_grouping_map_by(|key| *key)
+        .fold(0, |acc, _key, _| acc + 1);
+
+    let mut total = 0_i64;
+
+    for k in first_list {
+        if let Some(second_list_count) = second_list_counts.get(&k) {
+            println!("k {}, count {}", k, second_list_count);
+            let first_list_num = k as i64;
+            //let times_first_list = v as i64;
+            let times_second_list = *second_list_count as i64;
+            //let key_times = first_list_num * times_first_list;
+            let second_list_times = first_list_num * times_second_list;
+            total += second_list_times;
+        }
+    }
+
+    // let sum: i32 = first_list
+    //     .iter()
+    //     .zip(second_list.iter())
+    //     .map(|(a, b)| if a < b { b - a } else { a - b })
+    //     .sum();
+
+    Ok(total)
 }
 
 fn parse_lines(input: &mut &str) -> PResult<Vec<(i32, i32)>> {
@@ -72,8 +122,7 @@ mod tests {
 1   3
 3   9
 3   3
-" // note: needs new line for this parser...
-        .to_owned();
+";
         let result = parse_lines.parse(&input).unwrap();
         let expected = vec![(3, 4), (4, 3), (2, 5), (1, 3), (3, 9), (3, 3)];
         assert_eq!(expected, result)
@@ -95,11 +144,43 @@ mod tests {
 1   3
 3   9
 3   3
-"
-        .to_owned();
+";
 
-        let r = process_input(input).unwrap_or_default();
+        let r = process_part_one(&input).unwrap_or_default();
 
         assert_eq!(11, r);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let input = "3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+";
+
+        let r = process_part_two(&input).unwrap_or_default();
+
+        assert_eq!(31, r);
+    }
+
+    #[test]
+    fn itter_test() {
+        let items = vec![
+            ("apple", 10),
+            ("banana", 5),
+            ("apple", 3),
+            ("banana", 2),
+            ("orange", 7),
+        ];
+
+        let map = items
+            .into_iter()
+            .into_grouping_map_by(|(key, _)| *key)
+            .fold(0, |acc, _, (_, value)| acc + value);
+
+        println!("{:?}", map);
     }
 }
