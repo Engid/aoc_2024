@@ -51,7 +51,7 @@ fn process_part_one(input: &str) -> std::io::Result<i32> {
     Ok(sum)
 }
 
-fn process_part_two(input: &str) -> std::io::Result<i64> {
+fn process_part_two(input: &str) -> std::io::Result<i32> {
     let lines_result = parse_lines.parse(&input);
 
     let lines = match lines_result {
@@ -66,25 +66,13 @@ fn process_part_two(input: &str) -> std::io::Result<i64> {
         .into_grouping_map_by(|key| *key)
         .fold(0, |acc, _key, _| acc + 1);
 
-    let mut total = 0_i64;
+    let mut total = 0;
 
-    for k in first_list {
-        if let Some(second_list_count) = second_list_counts.get(&k) {
-            //println!("k {}, count {}", k, second_list_count);
-            let first_list_num = k as i64;
-            //let times_first_list = v as i64;
-            let times_second_list = *second_list_count as i64;
-            //let key_times = first_list_num * times_first_list;
-            let second_list_times = first_list_num * times_second_list;
-            total += second_list_times;
+    for num in first_list {
+        if let Some(count) = second_list_counts.get(&num) {
+            total += num * count;
         }
     }
-
-    // let sum: i32 = first_list
-    //     .iter()
-    //     .zip(second_list.iter())
-    //     .map(|(a, b)| if a < b { b - a } else { a - b })
-    //     .sum();
 
     Ok(total)
 }

@@ -3,6 +3,7 @@ use clap::Parser;
 // TODO: cleanup this?
 mod day1;
 mod day2;
+mod util;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
