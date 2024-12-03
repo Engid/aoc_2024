@@ -37,7 +37,8 @@ fn get_saftey_report(input: &str, dampen: bool) -> usize {
     for levels in readings {
         let mut direction: Option<Direction> = None;
         let mut last_num: i32 = 0;
-        let mut unsafe_count: i32 = 0;
+        //let mut unsafe_count: i32 = 0;
+        let mut level_safety: Vec<(i32, bool)> = Vec::new();
 
         for (idx, level) in levels.iter().enumerate() {
             if idx == 0 {
@@ -48,7 +49,7 @@ fn get_saftey_report(input: &str, dampen: bool) -> usize {
             let diff = level - last_num;
 
             if diff.abs() > 3 || diff == 0 {
-                unsafe_count += 1;
+                level_safety.push((*level, false));
                 continue;
             }
 
@@ -57,7 +58,7 @@ fn get_saftey_report(input: &str, dampen: bool) -> usize {
                 // negative
                 x if x < 0 => match direction {
                     Some(Direction::Up) => {
-                        unsafe_count += 1;
+                        level_safety.push((*level, false));
                         continue;
                     }
                     None => {
@@ -67,13 +68,13 @@ fn get_saftey_report(input: &str, dampen: bool) -> usize {
                 },
                 // redundant but ok
                 0 => {
-                    unsafe_count += 1;
+                    level_safety.push((*level, false));
                     continue;
                 }
                 // positive
                 _ => match direction {
                     Some(Direction::Down) => {
-                        unsafe_count += 1;
+                        level_safety.push((*level, false));
                         continue;
                     }
                     None => {
@@ -83,13 +84,29 @@ fn get_saftey_report(input: &str, dampen: bool) -> usize {
                 },
             }
             last_num = *level;
+            level_safety.push((*level, true));
         }
 
-        unsafe_counts.push(unsafe_count);
+        //unsafe_counts.push(unsafe_count);
+
+        let unsafe_count = level_safety.iter().filter(|&(_, safe)| !safe).count() as i32;
+
+        if unsafe_count > 1 {
+            // permutate different ways to remove a single unsafe level
+            let mut new_levels: Vec<Vec<i32>> = Vec::new();
+
+            // make copies to then filter out one level from
+            for _ in 0..unsafe_count {
+                new_levels.push(levels.clone());
+            }
+        } else if dampen && unsafe_count == 1 {
+            // we can just remove it and mark it safe
+            unsafe_counts.push(0);
+        }
 
         direction = None;
         last_num = 0;
-        unsafe_count = 0;
+        level_safety = Vec::new();
     }
 
     let safe_count = unsafe_counts
