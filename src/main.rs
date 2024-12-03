@@ -22,11 +22,11 @@ fn main() -> std::io::Result<()> {
     match args.day {
         1 => {
             println!("Day 1");
-            day1::solve_both();
+            let _ = day1::solve_both();
         }
         2 => {
-            println!("Day 2");
-            let r = day2::day_2(args.part);
+            //println!("Day 2");
+            let _ = day2::solve(args.part);
         }
         _ => {
             println!("Invalid day number");
