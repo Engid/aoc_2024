@@ -3,6 +3,7 @@ use clap::Parser;
 // TODO: cleanup this?
 mod day1;
 mod day2;
+mod day3;
 mod util;
 
 /// Simple program to greet a person
@@ -27,6 +28,9 @@ fn main() -> std::io::Result<()> {
         2 => {
             //println!("Day 2");
             let _ = day2::solve(args.part);
+        }
+        3 => {
+            let _ = day3::solve(args.part);
         }
         _ => {
             println!("Invalid day number");
